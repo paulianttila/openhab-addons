@@ -17,7 +17,7 @@
 
     <properties>
 		<esh.version>0.8.0-SNAPSHOT</esh.version>
-		<oh1.version>1.7.0.RC-1</oh1.version>
+		<oh1.version>1.8.0-SNAPSHOT</oh1.version>
     </properties>
 
     <build>
@@ -158,6 +158,11 @@
         </dependency>
 
 		<!-- openHAB 1 add-ons to include -->
+		<dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.denon</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.openhab.binding</groupId>
             <artifactId>org.openhab.binding.energenie</artifactId>
@@ -245,6 +250,11 @@
         </dependency>
         <dependency>
             <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.onewire</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
             <artifactId>org.openhab.binding.owserver</artifactId>
             <version>${oh1.version}</version>
         </dependency>
@@ -276,6 +286,11 @@
         <dependency>
             <groupId>org.openhab.binding</groupId>
             <artifactId>org.openhab.binding.zwave</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>    	
+        <dependency>
+            <groupId>org.openhab.binding</groupId>
+            <artifactId>org.openhab.binding.tellstick</artifactId>
             <version>${oh1.version}</version>
         </dependency>    	
 
@@ -310,6 +325,11 @@
             <artifactId>org.openhab.action.xbmc</artifactId>
             <version>${oh1.version}</version>
         </dependency>    	
+        <dependency>
+            <groupId>org.openhab.action</groupId>
+            <artifactId>org.openhab.action.xmpp</artifactId>
+            <version>${oh1.version}</version>
+        </dependency>    	
 
         <dependency>
             <groupId>org.openhab.io</groupId>
@@ -321,10 +341,10 @@
     <repositories>
         <repository>
             <id>openhab.repository.snapshot</id>
-            <name>openHAB Bintray Repository</name>
-            <url>http://dl.bintray.com/openhab/mvn</url>
+            <name>openHAB 1.x Snapshots</name>
+            <url>http://oss.jfrog.org/artifactory/libs-snapshot</url>
             <snapshots>
-                <enabled>false</enabled>
+                <enabled>true</enabled>
             </snapshots>
         </repository>
     </repositories>
