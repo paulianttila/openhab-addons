@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 openHAB UG (haftungsbeschraenkt) and others.
+ * Copyright (c) 2010-2015 openHAB UG (haftungsbeschraenkt) and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -36,6 +36,13 @@ public class RFXComBindingConstants {
 	public static final String BRIDGE_TYPE_RFXTRX433 = "RFXtrx433";
 	public static final String BRIDGE_TYPE_RFXTRX315 = "RFXtrx315";
 	public static final String BRIDGE_TYPE_RFXREC433 = "RFXrec433";
+	
+	// Transceiver types
+	public static final String TRANSCEIVER_310MHz = "310MHz";
+	public static final String TRANSCEIVER_315MHz = "315MHz";
+	public static final String TRANSCEIVER_433_92MHz = "433.92MHz";
+	public static final String TRANSCEIVER_433_92MHz_R = "433.92MHz receiver only";
+
 	
 	public final static ThingTypeUID BRIDGE_MANUAL = new ThingTypeUID(
 			BINDING_ID, BRIDGE_TYPE_MANUAL_BRIDGE);

@@ -9,7 +9,6 @@
 package org.openhab.binding.rfxcom.handler;
 
 import java.io.IOException;
-import java.util.EventObject;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
@@ -25,8 +24,9 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.rfxcom.RFXComBindingConstants;
 import org.openhab.binding.rfxcom.internal.DeviceMessageListener;
-import org.openhab.binding.rfxcom.internal.RFXComException;
-import org.openhab.binding.rfxcom.internal.config.RFXComConfiguration;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComNotImpException;
+import org.openhab.binding.rfxcom.internal.config.RFXComBridgeConfiguration;
 import org.openhab.binding.rfxcom.internal.connector.RFXComConnectorInterface;
 import org.openhab.binding.rfxcom.internal.connector.RFXComEventListener;
 import org.openhab.binding.rfxcom.internal.connector.RFXComJD2XXConnector;
@@ -61,7 +61,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
 	private static byte seqNbr = 0;
 	private static RFXComTransmitterMessage responseMessage = null;
 	private Object notifierObject = new Object();
-	private RFXComConfiguration configuration = null;
+	private RFXComBridgeConfiguration configuration = null;
 	private ScheduledFuture<?> connectorTask;
 	
 	public RFXComBridgeHandler(Bridge br) {
@@ -94,7 +94,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
 	public void initialize() {
 		logger.debug("Initializing RFXCOM bridge handler");
 
-		configuration = getConfigAs(RFXComConfiguration.class);
+		configuration = getConfigAs(RFXComBridgeConfiguration.class);
 		
 		if (connectorTask == null || connectorTask.isCancelled()) {
 			connectorTask = scheduler.scheduleAtFixedRate(new Runnable() {
@@ -204,7 +204,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
 		}
 	}
 
-	private byte[] createConfMessage(String bridgeType, RFXComConfiguration conf) {
+	private byte[] createConfMessage(String bridgeType, RFXComBridgeConfiguration conf) {
 		if (conf != null && bridgeType != null) {
 			RFXComInterfaceMessage msg = new RFXComInterfaceMessage();
 			msg.command = Commands.SET_MODE;
@@ -213,15 +213,15 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
 			case RFXComBindingConstants.BRIDGE_TYPE_RFXTRX315:
 				if (conf.transceiverType != null) {
 					switch (conf.transceiverType) {
-					case "310MHz":
+					case RFXComBindingConstants.TRANSCEIVER_310MHz:
 						msg.transceiverType = TransceiverType._310MHZ;
 						break;
-					case "315MHz":
+					case RFXComBindingConstants.TRANSCEIVER_315MHz:
 						msg.transceiverType = TransceiverType._315MHZ;
 						break;
 
-					case "433.92MHz receiver only":
-					case "433.92MHz":
+					case RFXComBindingConstants.TRANSCEIVER_433_92MHz_R:
+					case RFXComBindingConstants.TRANSCEIVER_433_92MHz:
 					default:
 						throw new IllegalArgumentException(
 								"Illegal tranceiver type");
@@ -232,13 +232,13 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
 			case RFXComBindingConstants.BRIDGE_TYPE_RFXREC433:
 				if (conf.transceiverType != null) {
 					switch (conf.transceiverType) {
-					case "433.92MHz receiver only":
+					case RFXComBindingConstants.TRANSCEIVER_433_92MHz_R:
 						msg.transceiverType = TransceiverType._443_92MHZ_RECEIVER_ONLY;
 						break;
 
-					case "310MHz":
-					case "315MHz":
-					case "433.92MHz":
+					case RFXComBindingConstants.TRANSCEIVER_310MHz:
+					case RFXComBindingConstants.TRANSCEIVER_315MHz:
+					case RFXComBindingConstants.TRANSCEIVER_433_92MHz:
 					default:
 						throw new IllegalArgumentException(
 								"Illegal tranceiver type");
@@ -249,12 +249,12 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
 			case RFXComBindingConstants.BRIDGE_TYPE_RFXTRX433:
 				if (conf.transceiverType != null) {
 					switch (conf.transceiverType) {
-					case "433.92MHz":
+					case RFXComBindingConstants.TRANSCEIVER_433_92MHz:
 						msg.transceiverType = TransceiverType._443_92MHZ_TRANSCEIVER;
 
-					case "310MHz":
-					case "315MHz":
-					case "433.92MHz receiver only":
+					case RFXComBindingConstants.TRANSCEIVER_310MHz:
+					case RFXComBindingConstants.TRANSCEIVER_315MHz:
+					case RFXComBindingConstants.TRANSCEIVER_433_92MHz_R:
 					default:
 						throw new IllegalArgumentException(
 								"Illegal tranceiver type");
@@ -265,16 +265,16 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
 			case RFXComBindingConstants.BRIDGE_TYPE_MANUAL_BRIDGE:
 				if (conf.transceiverType != null) {
 					switch (conf.transceiverType) {
-					case "433.92MHz":
+					case RFXComBindingConstants.TRANSCEIVER_433_92MHz:
 						msg.transceiverType = TransceiverType._443_92MHZ_TRANSCEIVER;
 						break;
-					case "433.92MHz receiver only":
+					case RFXComBindingConstants.TRANSCEIVER_433_92MHz_R:
 						msg.transceiverType = TransceiverType._443_92MHZ_RECEIVER_ONLY;
 						break;
-					case "310MHz":
+					case RFXComBindingConstants.TRANSCEIVER_310MHz:
 						msg.transceiverType = TransceiverType._310MHZ;
 						break;
-					case "315MHz":
+					case RFXComBindingConstants.TRANSCEIVER_315MHz:
 						msg.transceiverType = TransceiverType._315MHZ;
 						break;
 					default:
@@ -376,10 +376,10 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
 	private class MessageListener implements RFXComEventListener {
 
 		@Override
-		public void packetReceived(EventObject event, byte[] packet) {
+		public void packetReceived(byte[] packet) {
 
 			try {
-				RFXComMessage message = RFXComMessageFactory.getMessage(packet);
+				RFXComMessage message = RFXComMessageFactory.createMessage(packet);
 				logger.debug("Message received: {}", message);
 
 				if (message instanceof RFXComInterfaceMessage) {
@@ -420,6 +420,9 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
 						}
 					}
 				}
+			} catch (RFXComNotImpException e) {
+				logger.debug("Message not supported, data: {}",
+						DatatypeConverter.printHexBinary(packet), e);
 			} catch (RFXComException e) {
 				logger.error("Error occured during packet receiving, data: {}",
 						DatatypeConverter.printHexBinary(packet), e);
@@ -427,7 +430,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
 		}
 
 		@Override
-		public void errorOccured(EventObject event, String error) {
+		public void errorOccured(String error) {
 			logger.error("Error occured: {}", error);
 			updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
 		}

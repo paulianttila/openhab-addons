@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2014, openHAB.org and others.
+ * Copyright (c) 2010-2015, openHAB.org and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -235,14 +235,11 @@ public class RFXComSerialConnector implements RFXComConnectorInterface {
 	}
 	
 	private void sendMsgToListeners(byte[] msg) {
-		RFXComMessageReceivedEvent event = new RFXComMessageReceivedEvent(this);
-
 		try {
 			Iterator<RFXComEventListener> iterator = _listeners.iterator();
 
 			while (iterator.hasNext()) {
-				((RFXComEventListener) iterator.next()).packetReceived(event,
-						msg);
+				((RFXComEventListener) iterator.next()).packetReceived(msg);
 			}
 
 		} catch (Exception e) {
@@ -251,14 +248,11 @@ public class RFXComSerialConnector implements RFXComConnectorInterface {
 	}
 	
 	private void sendErrorToListeners(String error) {
-		RFXComMessageReceivedEvent event = new RFXComMessageReceivedEvent(this);
-
 		try {
 			Iterator<RFXComEventListener> iterator = _listeners.iterator();
 
 			while (iterator.hasNext()) {
-				((RFXComEventListener) iterator.next()).errorOccured(event,
-						error);
+				((RFXComEventListener) iterator.next()).errorOccured(error);
 			}
 
 		} catch (Exception e) {

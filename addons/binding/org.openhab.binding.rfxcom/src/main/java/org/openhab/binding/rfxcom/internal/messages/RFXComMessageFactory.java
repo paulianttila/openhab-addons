@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2014, openHAB.org and others.
+ * Copyright (c) 2010-2015, openHAB.org and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -13,13 +13,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.openhab.binding.rfxcom.internal.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComNotImpException;
 import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType;
 
 public class RFXComMessageFactory {
-	
+
 	final static String classUrl = "org.openhab.binding.rfxcom.internal.messages.";
-	
+
 	@SuppressWarnings("serial")
 	private static final Map<PacketType, String> messageClasses = Collections
 			.unmodifiableMap(new HashMap<PacketType, String>() {
@@ -34,8 +35,8 @@ public class RFXComMessageFactory {
 					put(PacketType.LIGHTING4, "RFXComLighting4Message");
 					put(PacketType.LIGHTING5, "RFXComLighting5Message");
 					put(PacketType.LIGHTING6, "RFXComLighting6Message");
-					put(PacketType.CHIME,"RFXComChimeMessage");
-					put(PacketType.FAN,"RFXComFanMessage");
+					put(PacketType.CHIME, "RFXComChimeMessage");
+					put(PacketType.FAN, "RFXComFanMessage");
 					put(PacketType.CURTAIN1, "RFXComCurtain1Message");
 					put(PacketType.BLINDS1, "RFXComBlinds1Message");
 					put(PacketType.RFY, "RFXComRfyMessage");
@@ -45,7 +46,7 @@ public class RFXComMessageFactory {
 					put(PacketType.THERMOSTAT1, "RFXComThermostat1Message");
 					put(PacketType.THERMOSTAT2, "RFXComThermostat2Message");
 					put(PacketType.THERMOSTAT3, "RFXComThermostat3Message");
-					put(PacketType.BBQ1,"RFXComBBQMessage");
+					put(PacketType.BBQ1, "RFXComBBQMessage");
 					put(PacketType.TEMPERATURE_RAIN, "RFXComTemperatureRainMessage");
 					put(PacketType.TEMPERATURE, "RFXComTemperatureMessage");
 					put(PacketType.HUMIDITY, "RFXComHumidityMessage");
@@ -69,7 +70,7 @@ public class RFXComMessageFactory {
 					put(PacketType.IO_LINES, "RFXComIOLinesMessage");
 				}
 			});
-				
+
 	/**
 	 * Command to reset RFXCOM controller.
 	 * 
@@ -91,38 +92,41 @@ public class RFXComMessageFactory {
 	public final static byte[] CMD_SAVE = new byte[] { 0x0D, 0x00, 0x00, 0x00,
 			0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
-	
-	public static RFXComMessage getMessageInterface(PacketType packetType) throws RFXComException {
-		
+	public static RFXComMessage createMessage(PacketType packetType)
+			throws RFXComException, RFXComNotImpException {
+
 		try {
 			String className = messageClasses.get(packetType);
 			Class<?> cl = Class.forName(classUrl + className);
 			return (RFXComMessage) cl.newInstance();
-			
+
 		} catch (ClassNotFoundException e) {
-			throw new RFXComException("Message " + packetType + " not implemented", e);
-			
+			throw new RFXComNotImpException("Message " + packetType
+					+ " not implemented", e);
+
 		} catch (Exception e) {
 			throw new RFXComException(e);
-		} 
+		}
 	}
-	
-	public static RFXComMessage getMessage(byte[] packet) throws RFXComException {
-		
+
+	public static RFXComMessage createMessage(byte[] packet)
+			throws RFXComException, RFXComNotImpException {
+
 		PacketType packetType = getPacketType(packet[1]);
-		
+
 		try {
 			String className = messageClasses.get(packetType);
 			Class<?> cl = Class.forName(classUrl + className);
 			Constructor<?> c = cl.getConstructor(byte[].class);
 			return (RFXComMessage) c.newInstance(packet);
-		
+
 		} catch (ClassNotFoundException e) {
-			throw new RFXComException("Message " + packetType + " not implemented", e);
-			
+			throw new RFXComNotImpException("Message " + packetType
+					+ " not implemented", e);
+
 		} catch (Exception e) {
 			throw new RFXComException(e);
-		} 
+		}
 	}
 
 	public static PacketType convertPacketType(String packetType)
@@ -143,7 +147,7 @@ public class RFXComMessageFactory {
 				return p;
 			}
 		}
-		
+
 		return PacketType.UNKNOWN;
 	}
 }
