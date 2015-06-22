@@ -40,7 +40,9 @@ public class RFXComBridgeDiscovery extends AbstractDiscoveryService {
 
 	/** The refresh interval for background discovery */
 	private long refreshInterval = 600;
-
+	
+	private boolean unsatisfiedLinkErrorLogged = false;
+	
 	private ScheduledFuture<?> discoveryJob;
 
 	private Runnable discoverRunnable = new Runnable() {
@@ -122,11 +124,20 @@ public class RFXComBridgeDiscovery extends AbstractDiscoveryService {
 		} catch (IOException e) {
 			logger.error("Error occured during discovery", e);
 		} catch (UnsatisfiedLinkError e) {
-			logger.error(
-					"Error occured when trying to load native library for OS '{}' version '{}', processor '{}'",
-					System.getProperty("os.name"),
-					System.getProperty("os.version"),
-					System.getProperty("os.arch"), e);
+			if (unsatisfiedLinkErrorLogged) {
+				logger.debug(
+						"Error occured when trying to load native library for OS '{}' version '{}', processor '{}'",
+						System.getProperty("os.name"),
+						System.getProperty("os.version"),
+						System.getProperty("os.arch"), e);
+			} else {
+				logger.error(
+						"Error occured when trying to load native library for OS '{}' version '{}', processor '{}'",
+						System.getProperty("os.name"),
+						System.getProperty("os.version"),
+						System.getProperty("os.arch"), e);
+				unsatisfiedLinkErrorLogged = true;
+			}
 		}
 	}
 
