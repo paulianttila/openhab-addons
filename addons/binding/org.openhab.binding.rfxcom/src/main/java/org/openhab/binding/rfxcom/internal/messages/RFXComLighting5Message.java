@@ -43,6 +43,11 @@ public class RFXComLighting5Message extends RFXComBaseMessage {
 		MDREMOTE(3),
 		CONRAD_RSL2(4),
 		LIVOLO(5),
+		RGB_TRC02(6),
+		AOKE(7),
+		RGB_TRC02_2(7),
+		EURODOMEST(8),
+		LIVOLO_APPLIANCE(9),
 		
 		UNKNOWN(255);
 

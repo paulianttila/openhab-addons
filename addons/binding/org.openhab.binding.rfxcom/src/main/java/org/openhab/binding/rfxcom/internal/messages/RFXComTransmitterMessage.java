@@ -23,7 +23,8 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 public class RFXComTransmitterMessage extends RFXComBaseMessage {
 
 	public enum SubType {
-		TRANSMITTER_MESSAGE(1),
+		ERROR_RECEIVER_DID_NOT_LOCK(0),
+		RESPONSE(1),
 
 		UNKNOWN(255);
 
@@ -68,7 +69,7 @@ public class RFXComTransmitterMessage extends RFXComBaseMessage {
 		}
 	}
 
-	public SubType subType = SubType.TRANSMITTER_MESSAGE;
+	public SubType subType = SubType.RESPONSE;
 	public Response response = Response.ACK;
 
 	public RFXComTransmitterMessage() {
@@ -84,8 +85,14 @@ public class RFXComTransmitterMessage extends RFXComBaseMessage {
 		String str = "";
 
 		str += super.toString();
-		str += ", Sub type = " + subType;
-		str += ", Response = " + response;
+		
+		if (subType == SubType.RESPONSE) {
+			str += ", Sub type = " + subType;
+			str += ", Response = " + response;
+		} else {
+			str += ", Sub type = " + subType;
+			// Response not used
+		}
 
 		return str;
 	}

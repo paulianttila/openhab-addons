@@ -60,15 +60,15 @@ public class RFXComBlinds1Message extends RFXComBaseMessage {
 	}
 
 	public enum SubType {
-		HASTA_NEW(0),	//Hasta new/RollerTrol
-		HASTA_OLD(1),
-		RF01(2),
-		AC114(3),
-		YR1326(4),		//Additional commands.
-		MEDIAMOUNT(5),	//MEDIA MOUNT have different direction commands then the rest!! needs to bee fixed.
-		DC106(6),
-		FOREST(7),
-		CS4330(8),		
+		T0(0),
+		T1(1),
+		T2(2),
+		T3(3),
+		T4(4),
+		T5(5),
+		T6(6),
+		T7(7),
+		T8(8),		
 		
 		UNKNOWN(255);
 
@@ -95,7 +95,7 @@ public class RFXComBlinds1Message extends RFXComBaseMessage {
 	private final static List<RFXComValueSelector> supportedOutputValueSelectors = Arrays
 			.asList(RFXComValueSelector.SHUTTER);
 
-	public SubType subType = SubType.HASTA_NEW;
+	public SubType subType = SubType.T0;
 	public int sensorId = 0;
 	public byte unitCode = 0;
 	public Commands command = Commands.STOP;

@@ -12,7 +12,8 @@ import static org.openhab.binding.rfxcom.RFXComBindingConstants.*;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 
-import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -22,8 +23,8 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.rfxcom.RFXComValueSelector;
-import org.openhab.binding.rfxcom.RFXComBindingConstants;
 import org.openhab.binding.rfxcom.internal.DeviceMessageListener;
 import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
@@ -46,11 +47,12 @@ public class RFXComHandler extends BaseThingHandler implements
 
 	private Logger logger = LoggerFactory.getLogger(RFXComHandler.class);
 
+	private final int LOW_BATTERY_LEVEL = 1;
+	
 	ScheduledFuture<?> refreshJob;
 	private RFXComBridgeHandler bridgeHandler;
 
-	private String deviceId = null;
-	private String subType = null;
+	private RFXComDeviceConfiguration config;
 
 	public RFXComHandler(Thing thing) {
 		super(thing);
@@ -58,8 +60,8 @@ public class RFXComHandler extends BaseThingHandler implements
 
 	@Override
 	public void handleCommand(ChannelUID channelUID, Command command) {
-		logger.debug("Received channel: {}, command: {} (this={})", channelUID,
-				command, this);
+		logger.debug("Received channel: {}, command: {}", channelUID,
+				command);
 
 		if (bridgeHandler != null) {
 
@@ -78,8 +80,8 @@ public class RFXComHandler extends BaseThingHandler implements
 						.getValueSelector(channelUID.getId());
 
 				if (supportedValueSelectors.contains(valSelector)) {
-					msg.setSubType(msg.convertSubType(subType));
-					msg.setDeviceId(deviceId);
+					msg.setSubType(msg.convertSubType(config.subType));
+					msg.setDeviceId(config.deviceId);
 					msg.convertFromState(valSelector, command);
 
 					bridgeHandler.sendMessage(msg);
@@ -102,17 +104,11 @@ public class RFXComHandler extends BaseThingHandler implements
 	 */
 	@Override
 	public void initialize() {
+		config = getConfigAs(RFXComDeviceConfiguration.class);
 
-		logger.debug("Initialized RFXCOM device handler for {}.", getThing()
-				.getUID());
-
-		RFXComDeviceConfiguration configuration = getConfigAs(RFXComDeviceConfiguration.class);
-		
-		Configuration config = getThing().getConfiguration();
-		deviceId = (String) config.get(RFXComBindingConstants.DEVICE_ID);
-		subType = config.get(RFXComBindingConstants.SUB_TYPE).toString();
-
-		logger.debug("deviceId={}, subType={}", deviceId, subType);
+		logger.debug(
+				"Initialized RFXCOM device handler for {}, deviceId={}, subType={}",
+				getThing().getUID(), config.deviceId, config.subType);
 	}
 
 	@Override
@@ -161,7 +157,7 @@ public class RFXComHandler extends BaseThingHandler implements
 	public void onDeviceMessageReceived(ThingUID bridge, RFXComMessage message) {
 		try {
 			String id = message.getDeviceId();
-			if (deviceId.equals(id)) {
+			if (config.deviceId.equals(id)) {
 				RFXComBaseMessage msg = (RFXComBaseMessage) message;
 				String receivedId = packetTypeThingMap.get(msg.packetType)
 						.getId();
@@ -233,6 +229,13 @@ public class RFXComHandler extends BaseThingHandler implements
 										CHANNEL_INSTANT_POWER),
 										message.convertToState(valueSelector));
 								break;
+							case LOW_BATTERY:
+								updateState(new ChannelUID(getThing().getUID(),
+										CHANNEL_BATTERY_LEVEL),
+										isLowBattery(message
+												.convertToState(valueSelector)));
+								break;
+								
 							case MOOD:
 								updateState(new ChannelUID(getThing().getUID(),
 										CHANNEL_MOOD),
@@ -271,7 +274,8 @@ public class RFXComHandler extends BaseThingHandler implements
 							case SIGNAL_LEVEL:
 								updateState(new ChannelUID(getThing().getUID(),
 										CHANNEL_SIGNAL_LEVEL),
-										message.convertToState(valueSelector));
+										convertSignalLevelToSystemWideLevel(message
+												.convertToState(valueSelector)));
 								break;
 							case STATUS:
 								updateState(new ChannelUID(getThing().getUID(),
@@ -320,6 +324,78 @@ public class RFXComHandler extends BaseThingHandler implements
 			}
 		} catch (Exception e) {
 			logger.error("Error occured during message receiving: ", e);
+		}
+	}
+	
+	/**
+	 * Convert internal signal level to system wide signal level.
+	 * 
+	 * @param signalLevel Internal signal level
+	 * @return Signal level in system wide level
+	 */
+	private State convertSignalLevelToSystemWideLevel(State signalLevel) {
+		
+		int level = ((DecimalType) signalLevel).intValue();
+		int newLevel = 0;
+
+		/*
+		 * RFXCOM signal levels are always between 0-15.
+		 * 
+		 * Use switch case to make level adaption easier in future if needed.
+		 * 
+		 * BigDecimal level =
+		 * ((DecimalType)signalLevel).toBigDecimal().divide(new BigDecimal(4));
+		 * return new DecimalType(level.setScale(0, RoundingMode.HALF_UP));
+		 */
+
+		switch (level) {
+		case 0:
+		case 1:
+			newLevel = 0;
+			break;
+
+		case 2:
+		case 3:
+		case 4:
+			newLevel = 1;
+			break;
+
+		case 5:
+		case 6:
+		case 7:
+			newLevel = 2;
+			break;
+
+		case 8:
+		case 9:
+		case 10:
+		case 11:
+			newLevel = 3;
+			break;
+
+		case 12:
+		case 13:
+		case 14:
+		case 15:
+		default:
+			newLevel = 4;
+		}
+
+		return new DecimalType(newLevel);
+	}
+
+	/**
+	 * Check if battery level is below low battery threshold level.
+	 * 
+	 * @param batteryLevel Internal battery level
+	 * @return OnOffType
+	 */
+	private State isLowBattery(State batteryLevel) {
+		int level = ((DecimalType)batteryLevel).intValue();
+		if (level <= LOW_BATTERY_LEVEL) {
+			return OnOffType.ON; 
+		} else {
+			return OnOffType.OFF;
 		}
 	}
 }

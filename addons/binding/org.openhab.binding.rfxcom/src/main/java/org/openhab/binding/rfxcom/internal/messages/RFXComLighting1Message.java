@@ -41,6 +41,8 @@ public class RFXComLighting1Message extends RFXComBaseMessage {
 		RISINGSUN(6),
 		PHILIPS(7),
 		ENERGENIE(8),
+		ENERGENIE_5(9),
+		COCO(10),
 		
 		UNKNOWN(255);
 
@@ -94,7 +96,7 @@ public class RFXComLighting1Message extends RFXComBaseMessage {
 			.asList(RFXComValueSelector.COMMAND);
 
 	public SubType subType = SubType.X10;
-	public char sensorId = 'A';
+	public char houseCode = 'A';
 	public byte unitCode = 0;
 	public Commands command = Commands.OFF;
 	public byte signalLevel = 0;
@@ -133,7 +135,7 @@ public class RFXComLighting1Message extends RFXComBaseMessage {
 			subType = SubType.UNKNOWN;
 		}
 		
-		sensorId = (char) data[4];
+		houseCode = (char) data[4];
 
 		try {
 			command = Commands.values()[data[6]];
@@ -161,7 +163,7 @@ public class RFXComLighting1Message extends RFXComBaseMessage {
 		data[1] = RFXComBaseMessage.PacketType.LIGHTING1.toByte();
 		data[2] = subType.toByte();
 		data[3] = seqNbr;
-		data[4] = (byte) sensorId;
+		data[4] = (byte) houseCode;
 		data[5] = unitCode;
 		data[6] = command.toByte();
 		data[7] = (byte) ((signalLevel & 0x0F) << 4);
@@ -171,7 +173,7 @@ public class RFXComLighting1Message extends RFXComBaseMessage {
 	
 	@Override
 	public String getDeviceId() {
-		 return sensorId + ID_DELIMITER + unitCode;
+		 return houseCode + ID_DELIMITER + unitCode;
 	}
 
 	@Override
@@ -276,7 +278,7 @@ public class RFXComLighting1Message extends RFXComBaseMessage {
 			throw new RFXComException("Invalid device id '" + deviceId + "'");
 		}
 
-		sensorId = ids[0].charAt(0);
+		houseCode = ids[0].charAt(0);
 		
 		// Get unitcode, 0 means group
 		unitCode = Byte.parseByte(ids[1]);

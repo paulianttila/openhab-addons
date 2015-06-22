@@ -33,6 +33,7 @@ import org.openhab.binding.rfxcom.internal.connector.RFXComJD2XXConnector;
 import org.openhab.binding.rfxcom.internal.connector.RFXComSerialConnector;
 import org.openhab.binding.rfxcom.internal.messages.RFXComInterfaceMessage;
 import org.openhab.binding.rfxcom.internal.messages.RFXComInterfaceMessage.Commands;
+import org.openhab.binding.rfxcom.internal.messages.RFXComInterfaceMessage.SubType;
 import org.openhab.binding.rfxcom.internal.messages.RFXComInterfaceMessage.TransceiverType;
 import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage;
 import org.openhab.binding.rfxcom.internal.messages.RFXComMessageFactory;
@@ -93,7 +94,8 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
 	@Override
 	public void initialize() {
 		logger.debug("Initializing RFXCOM bridge handler");
-
+		updateStatus(ThingStatus.OFFLINE);
+		
 		configuration = getConfigAs(RFXComBridgeConfiguration.class);
 		
 		if (connectorTask == null || connectorTask.isCancelled()) {
@@ -145,7 +147,6 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
 			}
 
 			if (connector != null) {
-				connector.addEventListener(eventListener);
 				connector.connect(dev);
 
 				logger.debug("Reset controller");
@@ -153,8 +154,14 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
 
 				// controller does not response immediately after reset,
 				// so wait a while
-				Thread.sleep(1000);
+				Thread.sleep(300);
+				connector.addEventListener(eventListener);
 
+				logger.debug("Get status of controller");
+				connector.sendMessage(RFXComMessageFactory.CMD_GET_STATUS);
+				// wait response
+				Thread.sleep(200);
+				
 				if (configuration.ignoreConfig) {
 					logger.debug("Ignoring tranceiver configuration");
 				} else {
@@ -183,14 +190,17 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
 									DatatypeConverter.printHexBinary(setMode));
 
 							connector.sendMessage(setMode);
+							// wait response
+							Thread.sleep(200);
 						} else if (setMode.length > 0) {
 							logger.warn("Illegal RFXCOM transceiver mode configuration");
 						}
 					}
 
 				}
-
-				connector.sendMessage(RFXComMessageFactory.CMD_STATUS);
+				
+				logger.debug("Start receiver");
+				connector.sendMessage(RFXComMessageFactory.CMD_START_RECEIVER);
 				updateStatus(ThingStatus.ONLINE);
 			}
 		} catch (Exception e) {
@@ -383,13 +393,13 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
 				logger.debug("Message received: {}", message);
 
 				if (message instanceof RFXComInterfaceMessage) {
-					logger.debug("Received interface message: ", message);
 					RFXComInterfaceMessage msg = (RFXComInterfaceMessage) message;
-					logger.debug(
-							"RFXCOM transceiver/receiver type: {}, hw version: {}.{}, fw version: {}",
-							msg.transceiverType, msg.hardwareVersion1,
-							msg.hardwareVersion2, msg.firmwareVersion);
-
+					if (msg.subType == SubType.RESPONSE) {
+						logger.debug(
+								"RFXCOM transceiver/receiver type: {}, hw version: {}.{}, fw version: {}",
+								msg.transceiverType, msg.hardwareVersion1,
+								msg.hardwareVersion2, msg.firmwareVersion);
+					}
 				} else if (message instanceof RFXComTransmitterMessage) {
 					RFXComTransmitterMessage resp = (RFXComTransmitterMessage) message;
 
@@ -422,7 +432,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
 				}
 			} catch (RFXComNotImpException e) {
 				logger.debug("Message not supported, data: {}",
-						DatatypeConverter.printHexBinary(packet), e);
+						DatatypeConverter.printHexBinary(packet));
 			} catch (RFXComException e) {
 				logger.error("Error occured during packet receiving, data: {}",
 						DatatypeConverter.printHexBinary(packet), e);

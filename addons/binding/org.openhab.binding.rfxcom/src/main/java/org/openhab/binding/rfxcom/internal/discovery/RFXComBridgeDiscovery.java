@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import jd2xx.JD2XX;
@@ -40,13 +41,23 @@ public class RFXComBridgeDiscovery extends AbstractDiscoveryService {
 	/** The refresh interval for background discovery */
 	private long refreshInterval = 600;
 
+	private ScheduledFuture<?> discoveryJob;
+
+	private Runnable discoverRunnable = new Runnable() {
+
+		@Override
+		public void run() {
+			discoverRfxcom();
+		}
+	};
+
 	public RFXComBridgeDiscovery() {
-		super(RFXComBindingConstants.SUPPORTED_BRIDGE_THING_TYPES_UIDS, 10);
+		super(RFXComBindingConstants.DISCOVERABLE_BRIDGE_THING_TYPES_UIDS, 10);
 	}
 
 	@Override
 	public Set<ThingTypeUID> getSupportedThingTypes() {
-		return RFXComBindingConstants.SUPPORTED_BRIDGE_THING_TYPES_UIDS;
+		return RFXComBindingConstants.DISCOVERABLE_BRIDGE_THING_TYPES_UIDS;
 	}
 
 	@Override
@@ -54,16 +65,21 @@ public class RFXComBridgeDiscovery extends AbstractDiscoveryService {
 		logger.debug("Start discovery scan for RFXCOM transceivers");
 		discoverRfxcom();
 	}
-	
+
 	@Override
 	protected void startBackgroundDiscovery() {
 		logger.debug("Start background discovery for RFXCOM transceivers");
-		scheduler.scheduleAtFixedRate(new Runnable() {
-			@Override
-			public void run() {
-				discoverRfxcom();
-			}
-		}, 0, refreshInterval, TimeUnit.SECONDS);
+		discoveryJob = scheduler.scheduleAtFixedRate(discoverRunnable, 0,
+				refreshInterval, TimeUnit.SECONDS);
+	}
+
+	@Override
+	protected void stopBackgroundDiscovery() {
+		logger.debug("Stop background discovery for RFXCOM transceivers");
+		if (discoveryJob != null && !discoveryJob.isCancelled()) {
+			discoveryJob.cancel(true);
+			discoveryJob = null;
+		}
 	}
 
 	private synchronized void discoverRfxcom() {
@@ -100,7 +116,7 @@ public class RFXComBridgeDiscovery extends AbstractDiscoveryService {
 					}
 				}
 			}
-			
+
 			logger.debug("Discovery done");
 
 		} catch (IOException e) {

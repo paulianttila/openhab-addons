@@ -8,6 +8,7 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import org.eclipse.smarthome.core.types.State;
@@ -24,8 +25,14 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 public class RFXComInterfaceMessage extends RFXComBaseMessage {
 
 	public enum SubType {
-		INTERFACE_RESPONSE(0),
-
+		RESPONSE(0),
+		UNKNOWN_RTS_REMOTE(1),
+		NO_EXTENDED_HW_PRESENT(2),
+		LIST_RFY_REMOTES(3),
+		NOT_USED_4(4),
+		NOT_USED_5(5),
+		NOT_USED_6(6),
+		START_RECEIVER(7),
 		UNKNOWN(255);
 
 		private final int subType;
@@ -51,7 +58,7 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
 		ENABLE_ALL(4),				// Enable all receiving modes of the receiver/transceiver
 		ENABLE_UNDECODED_PACKETS(5),// Enable reporting of undecoded packets
 		SAVE_RECEIVING_MODES(6),	// Save receiving modes of the receiver/transceiver in non-volatile memory
-		NOT_USED7(7),				// Not used
+		START_RECEIVER(7),			// Start RFXtrx receiver
 		T1(8),						// For internal use by RFXCOM
 		T2(9),						// For internal use by RFXCOM
 
@@ -102,8 +109,10 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
 		}
 	}
 
-	public SubType subType = SubType.INTERFACE_RESPONSE;
+	public SubType subType = SubType.RESPONSE;
 	public Commands command = Commands.UNKNOWN;
+	public String text = "";
+	
 	public TransceiverType transceiverType = TransceiverType._443_92MHZ_TRANSCEIVER;
 	public byte firmwareVersion = 0;
 
@@ -152,42 +161,53 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
 		str += super.toString();
 		str += ", Sub type = " + subType;
 		str += ", Command = " + command;
-		str += ", Transceiver type = " + transceiverType;
-		str += ", Firmware version = " + firmwareVersion;
-		str += ", Hardware version = " + hardwareVersion1 + "." + hardwareVersion2;
-		str += ", Undecoded packets = " + enableUndecodedPackets;
-		str += ", RFU6 packets = " + enableImagintronixOpusPackets;
-		str += ", Byron SX packets packets (433.92) = " + enableByronSXPackets;
-		str += ", RSL packets packets (433.92) = " + enableRSLPackets;
-		str += ", Lighting4 packets (433.92) = " + enableLighting4Packets;
-		str += ", FineOffset / Viking (433.92) packets = " + enableFineOffsetPackets;
-		str += ", Rubicson (433.92) packets = " + enableRubicsonPackets;
-		str += ", AE (433.92) packets = " + enableAEPackets;
 
-		str += ", BlindsT1/T2/T3 (433.92) packets = " + enableBlindsT1T2T3T4Packets;
-		str += ", BlindsT0 (433.92) packets = " + enableBlindsT0Packets;
-		str += ", ProGuard (868.35 FSK) packets = " + enableProGuardPackets;
-		str += ", FS20 (868.35) packets = " + enableFS20Packets;
-		str += ", La Crosse (433.92/868.30) packets = " + enableLaCrossePackets;
-		str += ", Hideki/UPM (433.92) packets = " + enableHidekiUPMPackets;
-		str += ", AD LightwaveRF (433.92) packets = " + enableADPackets;
-		str += ", Mertik (433.92) packets = " + enableMertikPackets;
+		if (subType == SubType.RESPONSE) {
 
-		str += ", Visonic (315/868.95) packets = " + enableVisonicPackets;
-		str += ", ATI (433.92) packets = " + enableATIPackets;
-		str += ", Oregon Scientific (433.92) packets = " + enableOregonPackets;
-		str += ", Meiantech (433.92) packets = " + enableMeiantechPackets;
-		str += ", HomeEasy EU (433.92) packets = " + enableHomeEasyPackets;
-		str += ", AC (433.92) packets = " + enableACPackets;
-		str += ", ARC (433.92) packets = " + enableARCPackets;
-		str += ", X10 (310/433.92) packets = " + enableX10Packets;
+			str += ", Transceiver type = " + transceiverType;
+			str += ", Firmware version = " + firmwareVersion;
+			str += ", Hardware version = " + hardwareVersion1 + "."
+					+ hardwareVersion2;
+			str += ", Undecoded packets = " + enableUndecodedPackets;
+			str += ", RFU6 packets = " + enableImagintronixOpusPackets;
+			str += ", Byron SX packets packets (433.92) = "
+					+ enableByronSXPackets;
+			str += ", RSL packets packets (433.92) = " + enableRSLPackets;
+			str += ", Lighting4 packets (433.92) = " + enableLighting4Packets;
+			str += ", FineOffset / Viking (433.92) packets = "
+					+ enableFineOffsetPackets;
+			str += ", Rubicson (433.92) packets = " + enableRubicsonPackets;
+			str += ", AE (433.92) packets = " + enableAEPackets;
+
+			str += ", BlindsT1/T2/T3 (433.92) packets = "
+					+ enableBlindsT1T2T3T4Packets;
+			str += ", BlindsT0 (433.92) packets = " + enableBlindsT0Packets;
+			str += ", ProGuard (868.35 FSK) packets = " + enableProGuardPackets;
+			str += ", FS20 (868.35) packets = " + enableFS20Packets;
+			str += ", La Crosse (433.92/868.30) packets = "
+					+ enableLaCrossePackets;
+			str += ", Hideki/UPM (433.92) packets = " + enableHidekiUPMPackets;
+			str += ", AD LightwaveRF (433.92) packets = " + enableADPackets;
+			str += ", Mertik (433.92) packets = " + enableMertikPackets;
+
+			str += ", Visonic (315/868.95) packets = " + enableVisonicPackets;
+			str += ", ATI (433.92) packets = " + enableATIPackets;
+			str += ", Oregon Scientific (433.92) packets = "
+					+ enableOregonPackets;
+			str += ", Meiantech (433.92) packets = " + enableMeiantechPackets;
+			str += ", HomeEasy EU (433.92) packets = " + enableHomeEasyPackets;
+			str += ", AC (433.92) packets = " + enableACPackets;
+			str += ", ARC (433.92) packets = " + enableARCPackets;
+			str += ", X10 (310/433.92) packets = " + enableX10Packets;
+		} else if (subType == SubType.START_RECEIVER) {
+			str += ", Text = " + text;
+		}
 
 		return str;
-	} 
-
+	}
 
 	@Override
-	public void encodeMessage( byte[] data) {
+	public void encodeMessage(byte[] data) {
 
 		super.encodeMessage(data);
 
@@ -202,47 +222,67 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
 			command = Commands.UNKNOWN;
 		}
 
-		transceiverType = TransceiverType.UNKNOWN;
+		if (subType == SubType.RESPONSE) {
+			transceiverType = TransceiverType.UNKNOWN;
 
-		for (TransceiverType type : TransceiverType.values()) {
-			if (type.toByte() == data[5]) {
-				transceiverType = type;
-				break;
+			for (TransceiverType type : TransceiverType.values()) {
+				if (type.toByte() == data[5]) {
+					transceiverType = type;
+					break;
+				}
+			}
+
+			firmwareVersion = data[6];
+
+			enableUndecodedPackets = (data[7] & 0x80) != 0 ? true : false;
+			enableImagintronixOpusPackets = (data[7] & 0x40) != 0 ? true
+					: false;
+			enableByronSXPackets = (data[7] & 0x20) != 0 ? true : false;
+			enableRSLPackets = (data[7] & 0x10) != 0 ? true : false;
+			enableLighting4Packets = (data[7] & 0x08) != 0 ? true : false;
+			enableFineOffsetPackets = (data[7] & 0x04) != 0 ? true : false;
+			enableRubicsonPackets = (data[7] & 0x02) != 0 ? true : false;
+			enableAEPackets = (data[7] & 0x01) != 0 ? true : false;
+
+			enableBlindsT1T2T3T4Packets = (data[8] & 0x80) != 0 ? true : false;
+			enableBlindsT0Packets = (data[8] & 0x40) != 0 ? true : false;
+			enableProGuardPackets = (data[8] & 0x20) != 0 ? true : false;
+			enableFS20Packets = (data[8] & 0x10) != 0 ? true : false;
+			enableLaCrossePackets = (data[8] & 0x08) != 0 ? true : false;
+			enableHidekiUPMPackets = (data[8] & 0x04) != 0 ? true : false;
+			enableADPackets = (data[8] & 0x02) != 0 ? true : false;
+			enableMertikPackets = (data[8] & 0x01) != 0 ? true : false;
+
+			enableVisonicPackets = (data[9] & 0x80) != 0 ? true : false;
+			enableATIPackets = (data[9] & 0x40) != 0 ? true : false;
+			enableOregonPackets = (data[9] & 0x20) != 0 ? true : false;
+			enableMeiantechPackets = (data[9] & 0x10) != 0 ? true : false;
+			enableHomeEasyPackets = (data[9] & 0x08) != 0 ? true : false;
+			enableACPackets = (data[9] & 0x04) != 0 ? true : false;
+			enableARCPackets = (data[9] & 0x02) != 0 ? true : false;
+			enableX10Packets = (data[9] & 0x01) != 0 ? true : false;
+
+			hardwareVersion1 = data[10];
+			hardwareVersion2 = data[11];
+
+			text = "";
+
+		} else if (subType == SubType.START_RECEIVER) {
+			final int len = 16;
+			final int dataOffset = 5;
+			
+			byte[] byteArray = new byte[len];
+			
+			for (int i=dataOffset; i<(dataOffset+len); i++) {
+				byteArray[i-dataOffset] += data[i];
+			}
+			
+			try {
+				text = new String(byteArray, "ASCII");
+			} catch (UnsupportedEncodingException e) {
+				// ignore
 			}
 		}
-
-		firmwareVersion = data[6];
-
-		enableUndecodedPackets 		= (data[7] & 0x80) != 0 ? true : false;
-		enableImagintronixOpusPackets 			= (data[7] & 0x40) != 0 ? true : false;
-		enableByronSXPackets 		= (data[7] & 0x20) != 0 ? true : false;
-		enableRSLPackets 			= (data[7] & 0x10) != 0 ? true : false;
-		enableLighting4Packets 		= (data[7] & 0x08) != 0 ? true : false;
-		enableFineOffsetPackets 	= (data[7] & 0x04) != 0 ? true : false;
-		enableRubicsonPackets 		= (data[7] & 0x02) != 0 ? true : false;
-		enableAEPackets 			= (data[7] & 0x01) != 0 ? true : false;
-
-		enableBlindsT1T2T3T4Packets = (data[8] & 0x80) != 0 ? true : false;
-		enableBlindsT0Packets 		= (data[8] & 0x40) != 0 ? true : false;
-		enableProGuardPackets 		= (data[8] & 0x20) != 0 ? true : false;
-		enableFS20Packets 			= (data[8] & 0x10) != 0 ? true : false;
-		enableLaCrossePackets 		= (data[8] & 0x08) != 0 ? true : false;
-		enableHidekiUPMPackets 		= (data[8] & 0x04) != 0 ? true : false;
-		enableADPackets 			= (data[8] & 0x02) != 0 ? true : false;
-		enableMertikPackets 		= (data[8] & 0x01) != 0 ? true : false;
-
-		enableVisonicPackets 		= (data[9] & 0x80) != 0 ? true : false;
-		enableATIPackets 			= (data[9] & 0x40) != 0 ? true : false;
-		enableOregonPackets 		= (data[9] & 0x20) != 0 ? true : false;
-		enableMeiantechPackets 		= (data[9] & 0x10) != 0 ? true : false;
-		enableHomeEasyPackets 		= (data[9] & 0x08) != 0 ? true : false;
-		enableACPackets 			= (data[9] & 0x04) != 0 ? true : false;
-		enableARCPackets 			= (data[9] & 0x02) != 0 ? true : false;
-		enableX10Packets 			= (data[9] & 0x01) != 0 ? true : false;
-
-		hardwareVersion1 = data[10];
-		hardwareVersion2 = data[11];
-
 	}
 
 	@Override
@@ -258,32 +298,32 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
 		data[5] = transceiverType.toByte();
 		data[6] = 0;
 
-		data[7] |= enableUndecodedPackets 		? 0x80 : 0x00;
-		data[7] |= enableImagintronixOpusPackets 			? 0x40 : 0x00;
-		data[7] |= enableByronSXPackets 		? 0x20 : 0x00;
-		data[7] |= enableRSLPackets 			? 0x10 : 0x00;
-		data[7] |= enableLighting4Packets 		? 0x08 : 0x00;
-		data[7] |= enableFineOffsetPackets 		? 0x04 : 0x00;
-		data[7] |= enableRubicsonPackets 		? 0x02 : 0x00;
-		data[7] |= enableAEPackets 				? 0x01 : 0x00;
+		data[7] |= enableUndecodedPackets ? 0x80 : 0x00;
+		data[7] |= enableImagintronixOpusPackets ? 0x40 : 0x00;
+		data[7] |= enableByronSXPackets ? 0x20 : 0x00;
+		data[7] |= enableRSLPackets ? 0x10 : 0x00;
+		data[7] |= enableLighting4Packets ? 0x08 : 0x00;
+		data[7] |= enableFineOffsetPackets ? 0x04 : 0x00;
+		data[7] |= enableRubicsonPackets ? 0x02 : 0x00;
+		data[7] |= enableAEPackets ? 0x01 : 0x00;
 
-		data[8] |= enableBlindsT1T2T3T4Packets 	? 0x80 : 0x00;
-		data[8] |= enableBlindsT0Packets 		? 0x40 : 0x00;
-		data[8] |= enableProGuardPackets 		? 0x20 : 0x00;
-		data[8] |= enableFS20Packets 			? 0x10 : 0x00;
-		data[8] |= enableLaCrossePackets 		? 0x08 : 0x00;
-		data[8] |= enableHidekiUPMPackets 		? 0x04 : 0x00;
-		data[8] |= enableADPackets 				? 0x02 : 0x00;
-		data[8] |= enableMertikPackets 			? 0x01 : 0x00;
+		data[8] |= enableBlindsT1T2T3T4Packets ? 0x80 : 0x00;
+		data[8] |= enableBlindsT0Packets ? 0x40 : 0x00;
+		data[8] |= enableProGuardPackets ? 0x20 : 0x00;
+		data[8] |= enableFS20Packets ? 0x10 : 0x00;
+		data[8] |= enableLaCrossePackets ? 0x08 : 0x00;
+		data[8] |= enableHidekiUPMPackets ? 0x04 : 0x00;
+		data[8] |= enableADPackets ? 0x02 : 0x00;
+		data[8] |= enableMertikPackets ? 0x01 : 0x00;
 
-		data[9] |= enableVisonicPackets 		? 0x80 : 0x00;
-		data[9] |= enableATIPackets 			? 0x40 : 0x00;
-		data[9] |= enableOregonPackets 			? 0x20 : 0x00;
-		data[9] |= enableMeiantechPackets 		? 0x10 : 0x00;
-		data[9] |= enableHomeEasyPackets 		? 0x08 : 0x00;
-		data[9] |= enableACPackets 				? 0x04 : 0x00;
-		data[9] |= enableARCPackets 			? 0x02 : 0x00;
-		data[9] |= enableX10Packets	 			? 0x01 : 0x00;
+		data[9] |= enableVisonicPackets ? 0x80 : 0x00;
+		data[9] |= enableATIPackets ? 0x40 : 0x00;
+		data[9] |= enableOregonPackets ? 0x20 : 0x00;
+		data[9] |= enableMeiantechPackets ? 0x10 : 0x00;
+		data[9] |= enableHomeEasyPackets ? 0x08 : 0x00;
+		data[9] |= enableACPackets ? 0x04 : 0x00;
+		data[9] |= enableARCPackets ? 0x02 : 0x00;
+		data[9] |= enableX10Packets ? 0x01 : 0x00;
 
 		data[10] = hardwareVersion1;
 		data[11] = hardwareVersion2;
@@ -296,7 +336,7 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
 	@Override
 	public State convertToState(RFXComValueSelector valueSelector)
 			throws RFXComException {
-		
+
 		throw new RFXComException("Not supported");
 	}
 

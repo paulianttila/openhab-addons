@@ -51,7 +51,8 @@ public enum RFXComValueSelector {
 	MOTION(RFXComBindingConstants.CHANNEL_MOTION, SwitchItem.class),
 	CONTACT(RFXComBindingConstants.CHANNEL_CONTACT, ContactItem.class),
 	VOLTAGE(RFXComBindingConstants.CHANNEL_VOLTAGE, NumberItem.class),
-	SET_POINT(RFXComBindingConstants.CHANNEL_SET_POINT, NumberItem.class)
+	SET_POINT(RFXComBindingConstants.CHANNEL_SET_POINT, NumberItem.class),
+	LOW_BATTERY(RFXComBindingConstants.CHANNEL_LOW_BATTERY, SwitchItem.class)
 	;
 
 	private final String text;

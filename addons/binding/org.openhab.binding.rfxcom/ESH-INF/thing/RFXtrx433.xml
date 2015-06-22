@@ -3,17 +3,17 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 org.eclipse.smarthome.thing-description.xsd">
-
-	<bridge-type id="bridge">
-		<label>RFXCOM USB Transceiver</label>
-		<description>This is universal RFXCOM transceiver bridge for manual configuration purposes.</description>
+	
+	<bridge-type id="RFXtrx433">
+		<label>RFXtrx433E USB 433.92MHz Transceiver</label>
+		<description>This is RFXCOM 433.92MHz transceiver bridge.</description>
 
 		<config-description>
-			<parameter name="serialPort" type="text" required="true">
-				<label>Serial Port</label>
-				<description>Serial port where RFXCOM transceiver is connected.</description>
+			<parameter name="bridgeId" type="text" required="true">
+				<label>Serial number</label>
+				<description>Serial number of the RFXCOM (FTDI) device</description>
 			</parameter>
-			<parameter name="ignoreConfig" type="boolean" required="true">
+			<parameter name="ignoreConfig" type="boolean">
 				<label>Skip transceiver configuration</label>
 				<description>Fully skip and ignore RFXCOM transceiver configuration. Binding assume that RFXCOM transceiver is preconfigured e.g. via RFXcom Manager. When this is enabled, both set mode command and individual message configurations are ignored.</description>
 				<default>true</default>
@@ -27,8 +27,6 @@
 				<description>RFXCOM transceiver type.</description>
 				<default>433.92MHz</default>
 				<options>
-					<option value="310MHz">310MHz</option>
-					<option value="315MHz">315MHz</option>
 					<option value="433.92MHz receiver only">433.92MHz receiver only</option>
 					<option value="433.92MHz">433.92MHz</option>
 				</options>
@@ -83,16 +81,6 @@
 				<description>Enable BlindsT0 messages to RFXCOM transceiver.</description>
 				<default>false</default>
 			</parameter>
-			<parameter name="enableProGuard" type="boolean">
-				<label>ProGuard messages</label>
-				<description>Enable ProGuard messages to RFXCOM transceiver.</description>
-				<default>false</default>
-			</parameter>
-			<parameter name="enableFS20" type="boolean">
-				<label>FS20 messages</label>
-				<description>Enable FS20 messages to RFXCOM transceiver.</description>
-				<default>false</default>
-			</parameter>
 			<parameter name="enableLaCrosse" type="boolean">
 				<label>La Crosse messages</label>
 				<description>Enable La Crosse messages to RFXCOM transceiver.</description>
@@ -111,11 +99,6 @@
 			<parameter name="enableMertik" type="boolean">
 				<label>Mertik messages</label>
 				<description>Enable Mertik messages to RFXCOM transceiver.</description>
-				<default>false</default>
-			</parameter>
-			<parameter name="enableVisonic" type="boolean">
-				<label>Visonic messages</label>
-				<description>Enable Visonic messages to RFXCOM transceiver.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableATI" type="boolean">

@@ -46,6 +46,7 @@ public class RFXComSecurity1Message extends RFXComBaseMessage {
 		VISONIC_CODESECURE(6),
 		VISONIC_POWERCODE_SENSOR_AUX_CONTACT(7),
 		MEIANTECH(8),
+		SA30(9),
 		
 		UNKNOWN(255);
 

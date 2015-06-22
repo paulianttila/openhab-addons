@@ -54,7 +54,10 @@ public class RFXComRfyMessage extends RFXComBaseMessage {
 	}
 
 	public enum SubType {
-		RFY(0), RFY_EXT(1);
+		RFY(0), 
+		RFY_EXT(1),
+		
+		UNKNOWN(255);
 
 		private final int subType;
 
@@ -106,7 +109,6 @@ public class RFXComRfyMessage extends RFXComBaseMessage {
 		}
 		str += ", Sub type = " + subType;
 		str += ", Device Id = " + getDeviceId();
-		str += ", Unit code = " + unitCode;
 		str += ", Command = " + command;
 		str += ", Signal level = " + signalLevel;
 

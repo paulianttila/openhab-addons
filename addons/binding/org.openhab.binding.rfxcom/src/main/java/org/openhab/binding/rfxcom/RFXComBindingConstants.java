@@ -60,6 +60,13 @@ public class RFXComBindingConstants {
 			.of(BRIDGE_MANUAL, BRIDGE_RFXTRX443, BRIDGE_RFXTRX315,
 					BRIDGE_RFXREC443);
 
+	/**
+	 * Presents all discoverable Bridge types by RFXCOM binding. 
+	 */
+	public final static Set<ThingTypeUID> DISCOVERABLE_BRIDGE_THING_TYPES_UIDS = ImmutableSet
+			.of(BRIDGE_RFXTRX443, BRIDGE_RFXTRX315,
+					BRIDGE_RFXREC443);
+
     // List of all Channel ids
     public final static String CHANNEL_SHUTTER = "shutter";
     public final static String CHANNEL_COMMAND = "command";
@@ -70,6 +77,7 @@ public class RFXComBindingConstants {
     public final static String CHANNEL_HUMIDITY = "humidity";
     public final static String CHANNEL_HUMIDITY_STATUS = "humidityStatus";
     public final static String CHANNEL_BATTERY_LEVEL = "batteryLevel";
+    public final static String CHANNEL_LOW_BATTERY = "lowBattery";
     public final static String CHANNEL_PRESSURE = "pressure";
     public final static String CHANNEL_FORECAST = "forecast";
     public final static String CHANNEL_RAIN_RATE = "rainrate";

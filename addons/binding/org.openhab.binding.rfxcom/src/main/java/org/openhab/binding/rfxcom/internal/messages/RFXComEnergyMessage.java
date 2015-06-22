@@ -27,35 +27,13 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
  */
 public class RFXComEnergyMessage  extends RFXComBaseMessage {
 
-	/*	Energy packet layout (length 17)
-
-        packetlength = 0
-        packettype = 1
-        subtype = 2
-        seqnbr = 3
-        id1 = 4
-        id2 = 5
-        count = 6
-        instant1 = 7
-        instant2 = 8
-        instant3 = 9
-        instant4 = 10
-        total1 = 11
-        total2 = 12
-        total3 = 13
-        total4 = 14
-        total5 = 15
-        total6 = 16
-        battery_level = 17	//bits 3-0
-        signal_level = 17 	//bits 7-4
-	 */
-	
 	private static float TOTAL_USAGE_CONVERSION_FACTOR = 223.666F;
 	private static float WATTS_TO_AMPS_CONVERSION_FACTOR = 230F;
 	
 	public enum SubType {
 		ELEC1(0),
 		ELEC2(1),
+		ELEC3(2),
 
 		UNKNOWN(255);
 

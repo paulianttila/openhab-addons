@@ -65,9 +65,10 @@ public class RFXComDeviceDiscoveryService extends AbstractDiscoveryService imple
 			if (thingUID != null) {
 				logger.trace("Adding new RFXCOM {} with id '{}' to smarthome inbox", thingUID, id);
 				String subType = msg.convertSubType(String.valueOf(msg.subType)).toString();
-				
+				String label = msg.packetType + "-"+ id;
 				DiscoveryResult discoveryResult = DiscoveryResultBuilder
 						.create(thingUID)
+						.withLabel(label)
 						.withProperty(RFXComBindingConstants.DEVICE_ID, id)
 						.withProperty(RFXComBindingConstants.SUB_TYPE, subType)
 						.withBridge(bridge).build();
