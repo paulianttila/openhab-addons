@@ -113,12 +113,16 @@ public class RFXComSerialConnector implements RFXComConnectorInterface {
 	
 	@Override
 	public void sendMessage(byte[] data) throws IOException {
+		logger.trace("Send data (len={}): {}", data.length,
+				DatatypeConverter.printHexBinary(data));
 		out.write(data);
 		out.flush();
 	}
 
 	public synchronized void addEventListener(RFXComEventListener rfxComEventListener) {
-		_listeners.add(rfxComEventListener);
+		if (!_listeners.contains(rfxComEventListener)) {
+			_listeners.add(rfxComEventListener);
+		}
 	}
 
 	public synchronized void removeEventListener(RFXComEventListener listener) {

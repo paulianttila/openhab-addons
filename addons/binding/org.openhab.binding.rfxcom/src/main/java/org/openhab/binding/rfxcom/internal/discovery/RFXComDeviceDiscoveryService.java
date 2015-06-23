@@ -36,7 +36,7 @@ public class RFXComDeviceDiscoveryService extends AbstractDiscoveryService imple
 	private RFXComBridgeHandler bridgeHandler;
 
 	public RFXComDeviceDiscoveryService(RFXComBridgeHandler rfxcomBridgeHandler) {
-		super(RFXComBindingConstants.SUPPORTED_DEVICE_THING_TYPES_UIDS, 10, true);
+		super(null, 1, false);
 		this.bridgeHandler = rfxcomBridgeHandler;
 	}
 
@@ -51,6 +51,11 @@ public class RFXComDeviceDiscoveryService extends AbstractDiscoveryService imple
 	@Override
 	public Set<ThingTypeUID> getSupportedThingTypes() {
 		return RFXComBindingConstants.SUPPORTED_DEVICE_THING_TYPES_UIDS;
+	}
+	
+	@Override
+	protected void startScan() {
+		// this can be ignored here as we discover devices from received messages
 	}
 
 	@Override
@@ -77,10 +82,5 @@ public class RFXComDeviceDiscoveryService extends AbstractDiscoveryService imple
 		} catch (Exception e) {
 			logger.debug("Error occured during device discovery", e);
 		} 
-	}
-
-	@Override
-	protected void startScan() {
-		// this can be ignored here as we discover devices from received messages
 	}
 }

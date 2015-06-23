@@ -54,7 +54,7 @@ public class RFXComBridgeDiscovery extends AbstractDiscoveryService {
 	};
 
 	public RFXComBridgeDiscovery() {
-		super(RFXComBindingConstants.DISCOVERABLE_BRIDGE_THING_TYPES_UIDS, 10);
+		super(RFXComBindingConstants.DISCOVERABLE_BRIDGE_THING_TYPES_UIDS, 10, false);
 	}
 
 	@Override
@@ -89,7 +89,7 @@ public class RFXComBridgeDiscovery extends AbstractDiscoveryService {
 		try {
 			JD2XX jd2xx = new JD2XX();
 			logger.debug(
-					"Discovering RFXCOM tranceiver devices by JD2XX version {}",
+					"Discovering RFXCOM transceiver devices by JD2XX version {}",
 					jd2xx.getLibraryVersion());
 			String[] devDescriptions = (String[]) jd2xx
 					.listDevicesByDescription();
@@ -143,7 +143,7 @@ public class RFXComBridgeDiscovery extends AbstractDiscoveryService {
 
 	private void addBridge(ThingTypeUID bridgeType, String bridgeId) {
 		logger.debug(
-				"Discovered RFXCOM tranceiver, bridgeType='{}', bridgeId='{}'",
+				"Discovered RFXCOM transceiver, bridgeType='{}', bridgeId='{}'",
 				bridgeType, bridgeId);
 
 		Map<String, Object> properties = new HashMap<>(2);
@@ -152,7 +152,7 @@ public class RFXComBridgeDiscovery extends AbstractDiscoveryService {
 		ThingUID uid = new ThingUID(bridgeType, bridgeId);
 		if (uid != null) {
 			DiscoveryResult result = DiscoveryResultBuilder.create(uid)
-					.withProperties(properties).withLabel("RFXCOM tranceiver")
+					.withProperties(properties).withLabel("RFXCOM transceiver")
 					.build();
 			thingDiscovered(result);
 		}

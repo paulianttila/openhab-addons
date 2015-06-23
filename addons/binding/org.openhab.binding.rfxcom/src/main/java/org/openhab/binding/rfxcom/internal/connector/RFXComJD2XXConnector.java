@@ -45,19 +45,21 @@ public class RFXComJD2XXConnector implements RFXComConnectorInterface {
 	Thread readerThread = null;
 
 	public RFXComJD2XXConnector() {
-		serialPort = new JD2XX();
 	}
 
 	@Override
 	public void connect(String device) throws IOException {
 		logger.info("Connecting to RFXCOM device '{}' ].", device);
 
+		if (serialPort == null) {
+			serialPort = new JD2XX();
+		}
 		serialPort.openBySerialNumber(device);
 		serialPort.setBaudRate(38400);
 		serialPort.setDataCharacteristics(8, JD2XX.STOP_BITS_1,
 				JD2XX.PARITY_NONE);
 		serialPort.setFlowControl(JD2XX.FLOW_NONE, 0, 0);
-		serialPort.setTimeouts(0, 1000);
+		serialPort.setTimeouts(100, 100);
 		
 		in = new JD2XXInputStream(serialPort);
 		out = new JD2XXOutputStream(serialPort);
@@ -109,13 +111,16 @@ public class RFXComJD2XXConnector implements RFXComConnectorInterface {
 
 	@Override
 	public void sendMessage(byte[] data) throws IOException {
+		logger.trace("Send data (len={}): {}", data.length,
+				DatatypeConverter.printHexBinary(data));
 		out.write(data);
-		out.flush();
 	}
 
 	public synchronized void addEventListener(
 			RFXComEventListener rfxComEventListener) {
-		_listeners.add(rfxComEventListener);
+		if (!_listeners.contains(rfxComEventListener)) {
+			_listeners.add(rfxComEventListener);
+		}
 	}
 
 	public synchronized void removeEventListener(RFXComEventListener listener) {

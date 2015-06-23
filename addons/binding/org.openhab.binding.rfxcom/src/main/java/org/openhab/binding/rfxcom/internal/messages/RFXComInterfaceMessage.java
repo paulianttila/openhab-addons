@@ -114,7 +114,7 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
 	public String text = "";
 	
 	public TransceiverType transceiverType = TransceiverType._443_92MHZ_TRANSCEIVER;
-	public byte firmwareVersion = 0;
+	public int firmwareVersion = 0;
 
 	public boolean enableUndecodedPackets = false;			// 0x80 - Undecoded packets
 	public boolean enableImagintronixOpusPackets = false;	// 0x40 - Imagintronix/Opus (433.92)
@@ -232,7 +232,7 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
 				}
 			}
 
-			firmwareVersion = data[6];
+			firmwareVersion = data[6] & 0xFF;
 
 			enableUndecodedPackets = (data[7] & 0x80) != 0 ? true : false;
 			enableImagintronixOpusPackets = (data[7] & 0x40) != 0 ? true

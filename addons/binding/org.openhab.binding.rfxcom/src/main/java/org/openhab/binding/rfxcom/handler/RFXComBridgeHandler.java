@@ -136,18 +136,23 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
 		logger.debug("Connecting to RFXCOM transceiver");
 		
 		try {
-			String dev = null;
-
+			String deviceName = null;
+			
 			if (configuration.serialPort != null) {
-				connector = new RFXComSerialConnector();
-				dev = configuration.serialPort;
+				deviceName = configuration.serialPort;
+				if (connector == null) {
+					connector = new RFXComSerialConnector();
+				}
 			} else if (configuration.bridgeId != null) {
-				connector = new RFXComJD2XXConnector();
-				dev = configuration.bridgeId;
+				deviceName = configuration.bridgeId;
+				if (connector == null) {
+					connector = new RFXComJD2XXConnector();
+				}
 			}
-
+			
 			if (connector != null) {
-				connector.connect(dev);
+				connector.disconnect();
+				connector.connect(deviceName);
 
 				logger.debug("Reset controller");
 				connector.sendMessage(RFXComMessageFactory.CMD_RESET);
@@ -387,7 +392,6 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
 
 		@Override
 		public void packetReceived(byte[] packet) {
-
 			try {
 				RFXComMessage message = RFXComMessageFactory.createMessage(packet);
 				logger.debug("Message received: {}", message);
@@ -437,6 +441,8 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
 				logger.error("Error occured during packet receiving, data: {}",
 						DatatypeConverter.printHexBinary(packet), e);
 			}
+			
+			updateStatus(ThingStatus.ONLINE);
 		}
 
 		@Override
