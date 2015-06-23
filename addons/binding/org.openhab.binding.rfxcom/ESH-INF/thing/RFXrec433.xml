@@ -22,14 +22,6 @@
 				<label>RFXCOM transceiver mode</label>
 				<description>RFXCOM transceiver set mode command. Command should be in hexadecimal string format and 28 characters (14 bytes) long. If set mode command is given, individual message configurations are ignored.</description>
 			</parameter>
-			<parameter name="transceiverType" type="text">
-				<label>RFXCOM transceiver type</label>
-				<description>RFXCOM transceiver type.</description>
-				<default>433.92MHz receiver only</default>
-				<options>
-					<option value="433.92MHz receiver only">433.92MHz receiver only</option>
-				</options>
-			</parameter>
 			<parameter name="enableUndecoded" type="boolean">
 				<label>Undecoded messages</label>
 				<description>Enable display of unencoded messages to RFXCOM transceiver.</description>

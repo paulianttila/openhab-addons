@@ -234,9 +234,6 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
 					case RFXComBindingConstants.TRANSCEIVER_315MHz:
 						msg.transceiverType = TransceiverType._315MHZ;
 						break;
-
-					case RFXComBindingConstants.TRANSCEIVER_433_92MHz_R:
-					case RFXComBindingConstants.TRANSCEIVER_433_92MHz:
 					default:
 						throw new IllegalArgumentException(
 								"Illegal tranceiver type");
@@ -245,36 +242,11 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
 				break;
 
 			case RFXComBindingConstants.BRIDGE_TYPE_RFXREC433:
-				if (conf.transceiverType != null) {
-					switch (conf.transceiverType) {
-					case RFXComBindingConstants.TRANSCEIVER_433_92MHz_R:
-						msg.transceiverType = TransceiverType._443_92MHZ_RECEIVER_ONLY;
-						break;
-
-					case RFXComBindingConstants.TRANSCEIVER_310MHz:
-					case RFXComBindingConstants.TRANSCEIVER_315MHz:
-					case RFXComBindingConstants.TRANSCEIVER_433_92MHz:
-					default:
-						throw new IllegalArgumentException(
-								"Illegal tranceiver type");
-					}
-				}
+				msg.transceiverType = TransceiverType._443_92MHZ_RECEIVER_ONLY;
 				break;
 
 			case RFXComBindingConstants.BRIDGE_TYPE_RFXTRX433:
-				if (conf.transceiverType != null) {
-					switch (conf.transceiverType) {
-					case RFXComBindingConstants.TRANSCEIVER_433_92MHz:
-						msg.transceiverType = TransceiverType._443_92MHZ_TRANSCEIVER;
-
-					case RFXComBindingConstants.TRANSCEIVER_310MHz:
-					case RFXComBindingConstants.TRANSCEIVER_315MHz:
-					case RFXComBindingConstants.TRANSCEIVER_433_92MHz_R:
-					default:
-						throw new IllegalArgumentException(
-								"Illegal tranceiver type");
-					}
-				}
+				msg.transceiverType = TransceiverType._443_92MHZ_TRANSCEIVER;
 				break;
 
 			case RFXComBindingConstants.BRIDGE_TYPE_MANUAL_BRIDGE:
