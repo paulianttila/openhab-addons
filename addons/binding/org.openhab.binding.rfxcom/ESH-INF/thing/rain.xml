@@ -12,13 +12,13 @@
 		</supported-bridge-type-refs>
 
 		<label>RFXCOM Rain Sensor</label>
-		<description>Generic thing type for Rain devices.</description>
+		<description>A Rain device.</description>
 
 		<channels>
 			<channel id="rainRate" typeId="rainrate" />
 			<channel id="rainTotal" typeId="raintotal" />
 			<channel id="signalLevel" typeId="system.signal-strength" />
-			<channel id="batteryLevel" typeId="batterylevel" />
+			<channel id="batteryLevel" typeId="system.battery-level" />
 			<channel id="lowBattery" typeId="system.low-battery" />
 		</channels>
 	</thing-type>

@@ -6,7 +6,7 @@
 	
 	<bridge-type id="RFXtrx433">
 		<label>RFXtrx433E USB 433.92MHz Transceiver</label>
-		<description>This is RFXCOM 433.92MHz transceiver bridge.</description>
+		<description>This is an RFXCOM 433.92MHz transceiver bridge.</description>
 
 		<config-description>
 			<parameter name="bridgeId" type="text" required="true">

@@ -11,8 +11,8 @@
 			<bridge-type-ref id="RFXrec433" />
 		</supported-bridge-type-refs>
 
-		<label>RFXCOM Rfy Sensor</label>
-		<description>Generic thing type for Rfy devices.</description>
+		<label>RFXCOM Rfy Actuator</label>
+		<description>A Rfy device.</description>
 
 		<channels>
 			<channel id="command" typeId="command" />

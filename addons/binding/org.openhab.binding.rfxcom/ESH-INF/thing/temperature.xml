@@ -12,12 +12,12 @@
 		</supported-bridge-type-refs>
 
 		<label>RFXCOM Temperature Sensor</label>
-		<description>Generic thing type for Temperature devices.</description>
+		<description>A Temperature device.</description>
 
 		<channels>
 			<channel id="temperature" typeId="temperature" />
-			<channel id="signalLevel" typeId="signallevel" />
-			<channel id="batteryLevel" typeId="batterylevel" />
+			<channel id="signalLevel" typeId="system.signal-strength" />
+			<channel id="batteryLevel" typeId="system.battery-level" />
 			<channel id="lowBattery" typeId="system.low-battery" />
 		</channels>
 	</thing-type>

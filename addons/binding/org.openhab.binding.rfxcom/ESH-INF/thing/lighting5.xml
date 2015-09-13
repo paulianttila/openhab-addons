@@ -12,7 +12,7 @@
 		</supported-bridge-type-refs>
 
 		<label>RFXCOM Lighting5 Actuator</label>
-		<description>Generic thing type for Lighting5 devices.</description>
+		<description>A Lighting5 device.</description>
 
 		<channels>
 			<channel id="command" typeId="command" />

@@ -12,13 +12,13 @@
 		</supported-bridge-type-refs>
 
 		<label>RFXCOM Curtain1 Actuator</label>
-		<description>Generic thing type for Curtain1 devices.</description>
+		<description>A Curtain1 device.</description>
 
 		<channels>
 			<channel id="command" typeId="command" />
 			<channel id="shutter" typeId="shutter" />
 			<channel id="signalLevel" typeId="system.signal-strength" />
-			<channel id="batteryLevel" typeId="batterylevel" />
+			<channel id="batteryLevel" typeId="system.battery-level" />
 			<channel id="lowBattery" typeId="system.low-battery" />
 		</channels>
 

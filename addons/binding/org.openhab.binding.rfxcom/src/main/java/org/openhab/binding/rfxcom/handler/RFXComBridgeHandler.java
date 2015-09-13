@@ -209,7 +209,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
 				updateStatus(ThingStatus.ONLINE);
 			}
 		} catch (Exception e) {
-			logger.error("Connection to RFXCOM transceiver failed", e);
+			logger.error("Connection to RFXCOM transceiver failed", e.getMessage());
 		} catch (UnsatisfiedLinkError e) {
 			logger.error(
 					"Error occured when trying to load native library for OS '{}' version '{}', processor '{}'",
@@ -411,7 +411,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
 						DatatypeConverter.printHexBinary(packet));
 			} catch (RFXComException e) {
 				logger.error("Error occured during packet receiving, data: {}",
-						DatatypeConverter.printHexBinary(packet), e);
+						DatatypeConverter.printHexBinary(packet), e.getMessage());
 			}
 			
 			updateStatus(ThingStatus.ONLINE);

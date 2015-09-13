@@ -11,14 +11,14 @@
 			<bridge-type-ref id="RFXrec433" />
 		</supported-bridge-type-refs>
 
-		<label>RFXCOM Blind1 Sensor</label>
-		<description>Generic thing type for Blinds1 devices.</description>
+		<label>RFXCOM Blinds1 Actuator</label>
+		<description>A Blinds1 device.</description>
 
 		<channels>
 			<channel id="command" typeId="command" />
 			<channel id="shutter" typeId="shutter" />
 			<channel id="signalLevel" typeId="system.signal-strength" />
-			<channel id="batteryLevel" typeId="batterylevel" />
+			<channel id="batteryLevel" typeId="system.battery-level" />
 			<channel id="lowBattery" typeId="system.low-battery" />
 		</channels>
 

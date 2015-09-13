@@ -12,13 +12,13 @@
 		</supported-bridge-type-refs>
 
 		<label>RFXCOM Wind Sensor</label>
-		<description>Generic thing type for Wind devices.</description>
+		<description>A Wind device.</description>
 
 		<channels>
 			<channel id="windSpeed" typeId="windspeed" />
 			<channel id="windDirection" typeId="winddirection" />
 			<channel id="signalLevel" typeId="system.signal-strength" />
-			<channel id="batteryLevel" typeId="batterylevel" />
+			<channel id="batteryLevel" typeId="system.battery-level" />
 			<channel id="lowBattery" typeId="system.low-battery" />
 		</channels>
 	</thing-type>

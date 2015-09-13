@@ -92,9 +92,9 @@ public class RFXComHandler extends BaseThingHandler implements
 				}
 
 			} catch (RFXComNotImpException e) {
-				logger.error("Message not supported", e);
+				logger.error("Message not supported", e.getMessage());
 			} catch (RFXComException e) {
-				logger.error("Transmitting error", e);
+				logger.error("Transmitting error", e.getMessage());
 			}
 		}
 	}
@@ -177,7 +177,8 @@ public class RFXComHandler extends BaseThingHandler implements
 							case BATTERY_LEVEL:
 								updateState(new ChannelUID(getThing().getUID(),
 										CHANNEL_BATTERY_LEVEL),
-										message.convertToState(valueSelector));
+										convertBatteryLevelToSystemWideLevel(message
+												.convertToState(valueSelector)));
 								break;
 							case CHILL_FACTOR:
 								updateState(new ChannelUID(getThing().getUID(),
@@ -323,12 +324,12 @@ public class RFXComHandler extends BaseThingHandler implements
 				}
 			}
 		} catch (Exception e) {
-			logger.error("Error occured during message receiving: ", e);
+			logger.error("Error occured during message receiving: ", e.getMessage());
 		}
 	}
 	
 	/**
-	 * Convert internal signal level to system wide signal level.
+	 * Convert internal signal level (0-15) to system wide signal level (0-4).
 	 * 
 	 * @param signalLevel Internal signal level
 	 * @return Signal level in system wide level
@@ -382,6 +383,23 @@ public class RFXComHandler extends BaseThingHandler implements
 		}
 
 		return new DecimalType(newLevel);
+	}
+
+	/**
+	 * Convert internal battery level (0-9) to system wide battery level (0-100%).
+	 * 
+	 * @param batteryLevel Internal battery level
+	 * @return Battery level in system wide level
+	 */
+	private State convertBatteryLevelToSystemWideLevel(State batteryLevel) {
+		
+		/*
+		 * RFXCOM signal levels are always between 0-9.
+		 * 
+		 */
+		int level = ((DecimalType) batteryLevel).intValue();
+		level = (level + 1) * 10;
+		return new DecimalType(level);
 	}
 
 	/**

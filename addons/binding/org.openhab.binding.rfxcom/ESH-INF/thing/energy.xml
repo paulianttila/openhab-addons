@@ -12,7 +12,7 @@
 		</supported-bridge-type-refs>
 
 		<label>RFXCOM Energy Sensor</label>
-		<description>Generic thing type for Energy devices.</description>
+		<description>A Energy device.</description>
 
 		<channels>
 			<channel id="command" typeId="command" />
@@ -21,7 +21,7 @@
 			<channel id="instantAmp" typeId="instantamp" />
 			<channel id="totalAmpHours" typeId="totalamphours" />
 			<channel id="signalLevel" typeId="system.signal-strength" />
-			<channel id="batteryLevel" typeId="batterylevel" />
+			<channel id="batteryLevel" typeId="system.battery-level" />
 			<channel id="lowBattery" typeId="system.low-battery" />
 		</channels>
 

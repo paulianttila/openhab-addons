@@ -12,14 +12,14 @@
 		</supported-bridge-type-refs>
 
 		<label>RFXCOM Thermostat1 Sensor</label>
-		<description>Generic thing type for Thermostat1 devices.</description>
+		<description>A Thermostat1 device.</description>
 
 		<channels>
 			<channel id="contact" typeId="contact" />
 			<channel id="setpoint" typeId="setpoint" />
 			<channel id="temperature" typeId="temperature" />
 			<channel id="signalLevel" typeId="system.signal-strength" />
-			<channel id="batteryLevel" typeId="batterylevel" />
+			<channel id="batteryLevel" typeId="system.battery-level" />
 			<channel id="lowBattery" typeId="system.low-battery" />
 		</channels>
 	</thing-type>

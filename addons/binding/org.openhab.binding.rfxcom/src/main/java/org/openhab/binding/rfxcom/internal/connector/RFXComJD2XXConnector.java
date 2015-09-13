@@ -49,7 +49,7 @@ public class RFXComJD2XXConnector implements RFXComConnectorInterface {
 
 	@Override
 	public void connect(String device) throws IOException {
-		logger.info("Connecting to RFXCOM device '{}' ].", device);
+		logger.info("Connecting to RFXCOM device '{}'.", device);
 
 		if (serialPort == null) {
 			serialPort = new JD2XX();
