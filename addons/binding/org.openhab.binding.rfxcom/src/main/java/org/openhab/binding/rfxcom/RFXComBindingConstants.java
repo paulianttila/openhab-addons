@@ -132,6 +132,7 @@ public class RFXComBindingConstants {
 	public final static ThingTypeUID THING_TYPE_RFX_SENSOR = new ThingTypeUID(BINDING_ID, "rfxsensor");
 	public final static ThingTypeUID THING_TYPE_RFX_METER = new ThingTypeUID(BINDING_ID, "rfxmeter");
 	public final static ThingTypeUID THING_TYPE_FS20 = new ThingTypeUID(BINDING_ID, "fs20");
+	public final static ThingTypeUID THING_TYPE_RFY = new ThingTypeUID(BINDING_ID, "rfy");
 
 	/**
 	 * Presents all supported Thing types by RFXCOM binding. 
@@ -155,7 +156,7 @@ public class RFXComBindingConstants {
 					THING_TYPE_POWER, THING_TYPE_WEIGHTING_SCALE,
 					THING_TYPE_GAS_USAGE, THING_TYPE_WATER_USAGE,
 					THING_TYPE_RFX_SENSOR, THING_TYPE_RFX_METER,
-					THING_TYPE_FS20);
+					THING_TYPE_FS20, THING_TYPE_RFY);
 
 	/**
 	 * Map RFXCOM packet types to RFXCOM Thing types and vice versa. 

@@ -219,7 +219,7 @@ public class RFXComRfyMessage extends RFXComBaseMessage {
 			throw new RFXComException("Invalid device id '" + deviceId + "'");
 		}
 
-		this.unitId = (byte) Short.parseShort(ids[0]);
+		this.unitId = Integer.parseInt(ids[0]);
 		this.unitCode = Byte.parseByte(ids[1]);
 	}
 
