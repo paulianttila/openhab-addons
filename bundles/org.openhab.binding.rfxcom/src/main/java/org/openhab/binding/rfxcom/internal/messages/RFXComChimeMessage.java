@@ -34,8 +34,9 @@ public class RFXComChimeMessage extends RFXComDeviceMessageImpl<RFXComChimeMessa
         BYRONSX(0),
         BYRONMP001(1),
         SELECTPLUS(2),
-        SELECTPLUS3(3),
-        ENVIVO(4);
+        BYRONBY(3),
+        ENVIVO(4),
+        ALFAWISE_DBELL(5);
 
         private final int subType;
 
@@ -87,10 +88,14 @@ public class RFXComChimeMessage extends RFXComDeviceMessageImpl<RFXComChimeMessa
                 break;
             case BYRONMP001:
             case SELECTPLUS:
-            case SELECTPLUS3:
             case ENVIVO:
+            case ALFAWISE_DBELL:
                 sensorId = (data[4] & 0xFF) << 16 | (data[5] & 0xFF) << 8 | (data[6] & 0xFF);
                 chimeSound = 1;
+                break;
+            case BYRONBY:
+                sensorId = (data[4] & 0xFF) << 9 | (data[5] & 0xFF) << 1 | (data[6] & 0x80) >> 7;
+                chimeSound = data[6] & 0x07;
                 break;
         }
 
@@ -114,11 +119,16 @@ public class RFXComChimeMessage extends RFXComDeviceMessageImpl<RFXComChimeMessa
                 break;
             case BYRONMP001:
             case SELECTPLUS:
-            case SELECTPLUS3:
             case ENVIVO:
+            case ALFAWISE_DBELL:
                 data[4] = (byte) ((sensorId & 0xFF0000) >> 16);
                 data[5] = (byte) ((sensorId & 0x00FF00) >> 8);
                 data[6] = (byte) ((sensorId & 0x0000FF));
+                break;
+            case BYRONBY:
+                data[4] = (byte) ((sensorId & 0x01FE00) >> 9);
+                data[5] = (byte) ((sensorId & 0x0001FE) >> 1);
+                data[6] = (byte) (((sensorId & 0x000001) << 7) | (chimeSound & 0x07));
                 break;
         }
 

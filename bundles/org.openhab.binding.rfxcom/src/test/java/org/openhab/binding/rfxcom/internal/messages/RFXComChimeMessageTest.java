@@ -43,4 +43,20 @@ public class RFXComChimeMessageTest {
 
         assertEquals("Message converted back", hexMessage, HexUtils.bytesToHex(decoded));
     }
+
+    @Test
+    public void testByronBy() throws RFXComException {
+        String hexMessage = "071603537E228670";
+        byte[] message = HexUtils.hexToBytes(hexMessage);
+        RFXComChimeMessage msg = (RFXComChimeMessage) RFXComMessageFactory.createMessage(message);
+        assertEquals("SubType", SubType.BYRONBY, msg.subType);
+        assertEquals("Seq Number", 83, msg.seqNbr);
+        assertEquals("Sensor Id", "64581", msg.getDeviceId());
+        assertEquals("Signal Level", 7, msg.signalLevel);
+        assertEquals("Sound", 6, msg.chimeSound);
+
+        byte[] decoded = msg.decodeMessage();
+
+        assertEquals("Message converted back", hexMessage, HexUtils.bytesToHex(decoded));
+    }
 }
